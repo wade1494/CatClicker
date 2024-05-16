@@ -1,5 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.*;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -10,8 +15,33 @@ public class ClickerGame extends JFrame {
     private void updateScoreLabel() {
         scoreLabel.setText("Score: " + score);
     }
-    
-
+    public void playPopCatSound()
+    {
+        try 
+        {
+            File soundFile = new File("src\\popcatSound.wav");
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+            clip.addLineListener(new LineListener() {
+                public void update(LineEvent event) {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        clip.close();
+                        try {
+                            audioInputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } 
+        catch (Exception a) 
+        {
+            a.printStackTrace();
+        }
+    }
     public ClickerGame() 
     {
         score = 0;
@@ -21,25 +51,20 @@ public class ClickerGame extends JFrame {
         clickButton.setPreferredSize(new Dimension(200, 200));
         clickButton.setLocation(500, 500);
         clickButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            if (toogle)
-            {
-                clickButton.setIcon(new ImageIcon("src\\images.jpg"));
-                toogle = !toogle;
-            }
-            else
-            {
-                clickButton.setIcon(new ImageIcon("src\\download.jpg"));
-                toogle = !toogle;
-            }
+        public void actionPerformed(ActionEvent e) 
+        {
+            playPopCatSound();
+            clickButton.setIcon(new ImageIcon("src\\images.jpg"));
+            toogle = !toogle;
             score++;
             updateScoreLabel();
-            
-            // Add the following code to return to download.jpg after a delay
-            Timer timer = new Timer(100, new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                clickButton.setIcon(new ImageIcon("src\\download.jpg"));
-                toogle = true;
+
+            Timer timer = new Timer(100, new ActionListener() 
+            {
+                public void actionPerformed(ActionEvent e) 
+                {
+                    clickButton.setIcon(new ImageIcon("src\\download.jpg"));
+                    toogle = true;
                 }
             });
             timer.setRepeats(false);
