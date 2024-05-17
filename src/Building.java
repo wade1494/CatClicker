@@ -12,15 +12,15 @@ public class Building
     private int x;
     private int y;
     private int cost;
-    private int income;
+    private double income;
     private int level;
     private int maxLevel;
-    public Building(int x, int y, int cost, int income, int level, int maxLevel)
+    public Building(int x, int y, int cost, double income, int level, int maxLevel)
     {
         this.x = x;
         this.y = y;
         this.cost = cost;
-        this.baseIncome = income;
+        this.income = income;
         this.level = level;
         this.maxLevel = maxLevel;
     }
@@ -36,12 +36,12 @@ public class Building
         return cost;
     }
 
-    public int getIncome() {
-        return baseIncome;
+    public double getIncome() {
+        return income;
     }
-    public int totalIncome()
+    public double totalIncome()
     {
-        return baseIncome * level;
+        return income * level;
     }
     public int getLevel() {
         return level;
@@ -50,25 +50,9 @@ public class Building
     public int getMaxLevel() {
         return maxLevel;
     }
-
-    public int getUpgradeCost() {
-        return upgradeCost;
-    }
-    public drawButton(int currentMoney, String image)
+    public void setLevel(int level)
     {
-        JButton clickButton = new JButton(image);
-        clickButton.setBorder(new EmptyBorder(0, 0, 0, 0));
-        clickButton.setPreferredSize(new Dimension(200, 200));
-        clickButton.setLocation(500, 500);
-        clickButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) 
-        {
-            if (currentMoney >= cost && level < maxLevel)
-            {
-                currentMoney -= cost;
-                level++;
-            }
-        }
-    });
+        this.level = level;
     }
+    
 }

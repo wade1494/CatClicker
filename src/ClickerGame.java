@@ -2,16 +2,42 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.sound.sampled.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
+class ClickerBuilding extends Building
+{
+    JButton clickerButton;
+    public ClickerBuilding()
+    {
+        super(500, 1000, 10, 0.1, 0, 2000000);
+        clickerButton = new JButton(new ImageIcon("src\\ClickerBuildingPicture.webp"));
+        clickerButton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        clickerButton.setLocation(super.getX(), super.getY());
+        clickerButton.setPreferredSize(new Dimension(300, 100));
+        ClickerGame.buildings.add(this);
+        
+    }
+    public void actionPerformed(ActionEvent e) {
+        if (ClickerGame.score >= this.getCost())
+        {
+            this.setLevel(this.getLevel() + 1);
+            ClickerGame.score -= this.getCost();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Not enough money to purchase the building.");
+        }
+    };
+}
 public class ClickerGame extends JFrame {
-    private int score;
+    static double score;
     private JLabel scoreLabel;
     private boolean toogle = true;
+    static ArrayList<Building> buildings = new ArrayList<Building>();
     private void updateScoreLabel() {
         scoreLabel.setText("Score: " + score);
     }
@@ -79,7 +105,20 @@ public class ClickerGame extends JFrame {
         panel.add(clickButton);
         panel.add(scoreLabel);
 
+        ClickerBuilding clickerBuilding = new ClickerBuilding();
+        panel.add(clickerBuilding.clickerButton);
         add(panel);
+        Timer time = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (Building building : buildings) {
+                    score += building.totalIncome();
+                }
+                updateScoreLabel();
+            }
+        });
+        time.setRepeats(true);
+        time.start();
+
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Clicker Game");
