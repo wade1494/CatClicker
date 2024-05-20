@@ -8,43 +8,42 @@ import javax.sound.sampled.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-class ClickerBuilding extends Building
-{
+
+class ClickerBuilding extends Building {
     JButton clickerButton;
-    public ClickerBuilding()
-    {
+
+    public ClickerBuilding() {
         super(500, 1000, 10, 0.1, 0, 2000000);
         clickerButton = new JButton(new ImageIcon("src\\ClickerBuildingPicture.webp"));
         clickerButton.setHorizontalTextPosition(SwingConstants.RIGHT);
-        clickerButton.setLocation(super.getX(), super.getY());
-        clickerButton.setPreferredSize(new Dimension(300, 100));
+        clickerButton.setBounds(super.getX(), super.getY(), 300, 100);
+
         ClickerGame.buildings.add(this);
-        
+
     }
+
     public void actionPerformed(ActionEvent e) {
-        if (ClickerGame.score >= this.getCost())
-        {
+        if (ClickerGame.score >= this.getCost()) {
             this.setLevel(this.getLevel() + 1);
             ClickerGame.score -= this.getCost();
-        }
-        else
-        {
+        } else {
             JOptionPane.showMessageDialog(null, "Not enough money to purchase the building.");
         }
     };
 }
+
 public class ClickerGame extends JFrame {
     static double score;
     private JLabel scoreLabel;
     private boolean toogle = true;
     static ArrayList<Building> buildings = new ArrayList<Building>();
+
     private void updateScoreLabel() {
         scoreLabel.setText("Score: " + score);
     }
-    public void playPopCatSound()
-    {
-        try 
-        {
+
+    public void playPopCatSound() {
+        try {
             File soundFile = new File("src\\popcatSound.wav");
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
             Clip clip = AudioSystem.getClip();
@@ -62,14 +61,12 @@ public class ClickerGame extends JFrame {
                     }
                 }
             });
-        } 
-        catch (Exception a) 
-        {
+        } catch (Exception a) {
             a.printStackTrace();
         }
     }
-    public ClickerGame() 
-    {
+
+    public ClickerGame() {
         score = 0;
 
         JButton clickButton = new JButton(new ImageIcon("src\\download.jpg"));
@@ -77,24 +74,21 @@ public class ClickerGame extends JFrame {
         clickButton.setPreferredSize(new Dimension(200, 200));
         clickButton.setLocation(500, 500);
         clickButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) 
-        {
-            playPopCatSound();
-            clickButton.setIcon(new ImageIcon("src\\images.jpg"));
-            toogle = !toogle;
-            score++;
-            updateScoreLabel();
+            public void actionPerformed(ActionEvent e) {
+                playPopCatSound();
+                clickButton.setIcon(new ImageIcon("src\\images.jpg"));
+                toogle = !toogle;
+                score++;
+                updateScoreLabel();
 
-            Timer timer = new Timer(100, new ActionListener() 
-            {
-                public void actionPerformed(ActionEvent e) 
-                {
-                    clickButton.setIcon(new ImageIcon("src\\download.jpg"));
-                    toogle = true;
-                }
-            });
-            timer.setRepeats(false);
-            timer.start();
+                Timer timer = new Timer(100, new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        clickButton.setIcon(new ImageIcon("src\\download.jpg"));
+                        toogle = true;
+                    }
+                });
+                timer.setRepeats(false);
+                timer.start();
             }
         });
 
@@ -118,7 +112,6 @@ public class ClickerGame extends JFrame {
         });
         time.setRepeats(true);
         time.start();
-
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Clicker Game");
