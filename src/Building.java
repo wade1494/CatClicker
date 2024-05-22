@@ -39,6 +39,7 @@ public class Building
     public double getIncome() {
         return income;
     }
+    
     public double totalIncome()
     {
         return income * level;
