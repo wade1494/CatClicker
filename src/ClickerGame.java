@@ -21,15 +21,16 @@ import java.awt.Dimension;
 class ClickerBuilding extends Building
 {
     JButton clickerButton;
-    public ClickerBuilding()
-    {
+
+    public ClickerBuilding() {
         super(500, 1000, 10, 0.1, 0, 2000000);
         
         ClickerGame.buildings.add(this);
-        
+
     }
     
 }
+
 public class ClickerGame extends JFrame {
     static double score;
     private JLabel scoreLabel;
@@ -65,10 +66,9 @@ public class ClickerGame extends JFrame {
         timer.setRepeats(false);
         timer.start();
     }
-    public void playPopCatSound()
-    {
-        try 
-        {
+
+    public void playPopCatSound() {
+        try {
             File soundFile = new File("src\\popcatSound.wav");
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
             Clip clip = AudioSystem.getClip();
@@ -86,14 +86,12 @@ public class ClickerGame extends JFrame {
                     }
                 }
             });
-        } 
-        catch (Exception a) 
-        {
+        } catch (Exception a) {
             a.printStackTrace();
         }
     }
-    public ClickerGame() 
-    {
+
+    public ClickerGame() {
         score = 0;
 
         JButton clickButton = new JButton(new ImageIcon(("src\\download.jpg")));
@@ -156,7 +154,6 @@ public class ClickerGame extends JFrame {
         });
         time.setRepeats(true);
         time.start();
-
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
