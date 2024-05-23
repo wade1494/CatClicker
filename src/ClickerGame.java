@@ -23,8 +23,7 @@ class ClickerBuilding extends Building
     JButton clickerButton;
 
     public ClickerBuilding() {
-        super(500, 1000, 10, 0.1, 0, 2000000);
-        
+        super(300, 200, 10, 0.1, 0, 2000000);
         ClickerGame.buildings.add(this);
 
     }
@@ -36,18 +35,22 @@ public class ClickerGame extends JFrame {
     private JLabel scoreLabel;
     private boolean toogle = true;
     static ArrayList<Building> buildings = new ArrayList<Building>();
+    int upgradeScore;
+    //UpdateScoreLabel
     NumberFormat formatter = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
+    DecimalFormat df = new DecimalFormat("0.0");
     private void updateScoreLabel() {
-        formatter.setMaximumFractionDigits(2);
-        if (score > 1000)
-        {
+        
+        if (score >= 1000) {
+            formatter.setMaximumFractionDigits(2);
             scoreLabel.setText("Cat Food: " + formatter.format(score));
-        }
-        else
+        } else 
         {
-            scoreLabel.setText("Cat Food: " +  Math.floor(score * 100) / 100);
+            scoreLabel.setText("Cat Food: " + df.format(score));
         }
     }
+
+    //CatAnimation
     public void catAnimation(JButton button)
     {
         button.setIcon(new ImageIcon("src\\images.jpg"));
@@ -67,6 +70,7 @@ public class ClickerGame extends JFrame {
         timer.start();
     }
 
+    //PopCatSound
     public void playPopCatSound() {
         try {
             File soundFile = new File("src\\popcatSound.wav");
@@ -90,17 +94,16 @@ public class ClickerGame extends JFrame {
             a.printStackTrace();
         }
     }
-
+    //Game Constructor
     public ClickerGame() {
         score = 0;
-
+        upgradeScore = 0; //Implement later if have time
+        //ClickButton
         JButton clickButton = new JButton(new ImageIcon(("src\\download.jpg")));
         clickButton.setBounds(0, 0, 200, 200);
         clickButton.setBorder(new EmptyBorder(0, 0, 0, 0));
         clickButton.setVisible(true);
-        Icon imgIcon = new ImageIcon("src\\rat-spinning.gif");
-        JLabel spinningRat = new JLabel(imgIcon);
-        spinningRat.setBounds(0, 200, 200, 200);
+        
         clickButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) 
         {
@@ -110,18 +113,26 @@ public class ClickerGame extends JFrame {
             }
         });
 
-        scoreLabel = new JLabel("Cat Food: " +  Math.floor(score * 100) / 100);
+        //Spinning Rat
+        Icon imgIcon = new ImageIcon("src\\rat-spinning.gif");
+        JLabel spinningRat = new JLabel(imgIcon);
+        spinningRat.setBounds(400, 200, 200, 200);
+        spinningRat.setVisible(false);
+
+        //ScoreLabel
+        scoreLabel = new JLabel("Cat Food: " +  score);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        scoreLabel.setBounds(clickButton.getX() + 55, clickButton.getY() + 170, 100, 100);
-        JPanel panel = new JPanel(null);
-        panel.add(clickButton);
-        panel.add(scoreLabel);
-        panel.add(spinningRat);
+        scoreLabel.setBounds(clickButton.getX() + 55, clickButton.getY() + 170, 200, 100);
+
+        
+
+        //ClickerBuilding
         ClickerBuilding clickerBuilding = new ClickerBuilding();
-        JButton clickerButton = new JButton(new ImageIcon("src\\ClickerBuildingPicture.jpg"));
-        clickerButton.setLocation(super.getX(), super.getY());
-        clickerButton.setPreferredSize(new Dimension(300, 100));
-        clickerButton.addActionListener(new ActionListener() 
+        JButton clickerBuildingButton = new JButton("<html>Clicker Building<br>Cost: 10 Cat Food<br>Income: 0.1 Per Second</html>");
+        clickerBuildingButton.setIcon(new ImageIcon("src\\ClickerBuilding.jpg"));
+        clickerBuildingButton.setBounds(clickerBuilding.getX(), clickerBuilding.getY(), 300, 75);
+        clickerBuildingButton.setVisible(true);
+        clickerBuildingButton.addActionListener(new ActionListener() 
         {
             public void actionPerformed(ActionEvent e) {
                 if (ClickerGame.score >= clickerBuilding.getCost())
@@ -135,9 +146,8 @@ public class ClickerGame extends JFrame {
                 }
             };
         });
-        panel.add(clickerButton);
-        
-        add(panel);
+
+        //Income Timer System
         Timer time = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                     for (Building building : buildings) {
@@ -155,6 +165,15 @@ public class ClickerGame extends JFrame {
         time.setRepeats(true);
         time.start();
 
+        //Panel
+        JPanel panel = new JPanel(null);
+        panel.add(clickButton);
+        panel.add(scoreLabel);
+        panel.add(spinningRat);
+        panel.add(clickerBuildingButton);
+        
+        //Frame
+        add(panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setResizable(false);
