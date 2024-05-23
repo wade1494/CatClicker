@@ -8,9 +8,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.Flow;
-
 import javax.sound.sampled.*;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EmptyBorder;
@@ -18,24 +16,32 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Dimension;
+
+
 class ClickerBuilding extends Building
 {
-    JButton clickerButton;
-
-    public ClickerBuilding() {
-        super(300, 200, 10, 0.1, 0, 2000000);
+    public ClickerBuilding() 
+    {
+        super(300, 25, 10, 0.1, 0, 2000000, 1);
         ClickerGame.buildings.add(this);
-
     }
-    
 }
-
+class CatLover extends Building
+{
+    public CatLover() 
+    {
+        super(300, 125, 100, 100, 0, 2000000,10);
+        ClickerGame.buildings.add(this);
+    }
+}
 public class ClickerGame extends JFrame {
     static double score;
     private JLabel scoreLabel;
     private boolean toogle = true;
+    JButton clickButton = new JButton(new ImageIcon(("src\\download.jpg")));
+    JPanel panel = new JPanel(null);
     static ArrayList<Building> buildings = new ArrayList<Building>();
-    int upgradeScore;
+    static int scoreMultiplier;
     //UpdateScoreLabel
     NumberFormat formatter = NumberFormat.getCompactNumberInstance(Locale.US, NumberFormat.Style.SHORT);
     DecimalFormat df = new DecimalFormat("0.0");
@@ -49,14 +55,29 @@ public class ClickerGame extends JFrame {
             scoreLabel.setText("Cat Food: " + df.format(score));
         }
     }
-
+    public void setUpIncomeTimer(Building building)
+    {
+        Timer timer = new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                for (Building val : buildings)
+                {
+                    if (building == val)
+                    {
+                    score += building.totalIncome() / (building.getTime() * 10);
+                    }
+                }
+            }
+        });
+        timer.setRepeats(true);
+        timer.start();
+    }
     //CatAnimation
     public void catAnimation(JButton button)
     {
         button.setIcon(new ImageIcon("src\\images.jpg"));
         toogle = !toogle;
         
-        updateScoreLabel();
 
         Timer timer = new Timer(100, new ActionListener() 
         {
@@ -71,7 +92,7 @@ public class ClickerGame extends JFrame {
     }
 
     //PopCatSound
-    public void playPopCatSound() {
+    public static void playPopCatSound() {
         try {
             File soundFile = new File("src\\popcatSound.wav");
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
@@ -97,17 +118,17 @@ public class ClickerGame extends JFrame {
     //Game Constructor
     public ClickerGame() {
         score = 0;
-        upgradeScore = 0; //Implement later if have time
+        scoreMultiplier = 0; //Implement later if have time
+
         //ClickButton
-        JButton clickButton = new JButton(new ImageIcon(("src\\download.jpg")));
-        clickButton.setBounds(0, 0, 200, 200);
+        clickButton = new JButton(new ImageIcon(("src\\download.jpg")));
+        clickButton.setBounds(10, 10, 200, 200);
         clickButton.setBorder(new EmptyBorder(0, 0, 0, 0));
         clickButton.setVisible(true);
-        
         clickButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) 
         {
-            score++;
+            score+=100;
             playPopCatSound();
             catAnimation(clickButton);
             }
@@ -119,6 +140,20 @@ public class ClickerGame extends JFrame {
         spinningRat.setBounds(400, 200, 200, 200);
         spinningRat.setVisible(false);
 
+        // Update Score every 100ms
+        Timer timer = new Timer(100, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updateScoreLabel();
+                if (score >= 1000000) 
+                {
+                    spinningRat.setVisible(true);
+                }
+            }
+        });
+        timer.setRepeats(true);
+        timer.start();
+        
+
         //ScoreLabel
         scoreLabel = new JLabel("Cat Food: " +  score);
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 15));
@@ -128,49 +163,18 @@ public class ClickerGame extends JFrame {
 
         //ClickerBuilding
         ClickerBuilding clickerBuilding = new ClickerBuilding();
-        JButton clickerBuildingButton = new JButton("<html>Clicker Building<br>Cost: 10 Cat Food<br>Income: 0.1 Per Second</html>");
-        clickerBuildingButton.setIcon(new ImageIcon("src\\ClickerBuilding.jpg"));
-        clickerBuildingButton.setBounds(clickerBuilding.getX(), clickerBuilding.getY(), 300, 75);
-        clickerBuildingButton.setVisible(true);
-        clickerBuildingButton.addActionListener(new ActionListener() 
-        {
-            public void actionPerformed(ActionEvent e) {
-                if (ClickerGame.score >= clickerBuilding.getCost())
-                {
-                    clickerBuilding.setLevel(clickerBuilding.getLevel() + 1);
-                    ClickerGame.score -= clickerBuilding.getCost();
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(null, "Not enough money to purchase the building. You need " + (clickerBuilding.getCost() -  Math.floor(score * 100) / 100) + " more to purchase the building.");
-                }
-            };
-        });
+        clickerBuilding.setUpButton(panel, clickerBuilding, "src\\ClickerBuilding.jpg");
+        setUpIncomeTimer(clickerBuilding);
 
-        //Income Timer System
-        Timer time = new Timer(1000, new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                    for (Building building : buildings) {
-                        if (building.totalIncome() > 0.0)
-                        {
-                            playPopCatSound();
-                            catAnimation(clickButton);
-                            
-                        }
-                        score += building.totalIncome();
-                    }
-                    updateScoreLabel();
-            }
-        });
-        time.setRepeats(true);
-        time.start();
-
+        //CatLover
+        CatLover catLover = new CatLover();
+        catLover.setUpButton(panel, catLover, "src\\catLover.jpg");
+        setUpIncomeTimer(catLover);
         //Panel
-        JPanel panel = new JPanel(null);
+        
         panel.add(clickButton);
         panel.add(scoreLabel);
         panel.add(spinningRat);
-        panel.add(clickerBuildingButton);
         
         //Frame
         add(panel);

@@ -15,7 +15,8 @@ public class Building
     private double income;
     private int level;
     private int maxLevel;
-    public Building(int x, int y, int cost, double income, int level, int maxLevel)
+    private int time;
+    public Building(int x, int y, int cost, double income, int level, int maxLevel, int time)
     {
         this.x = x;
         this.y = y;
@@ -23,6 +24,7 @@ public class Building
         this.income = income;
         this.level = level;
         this.maxLevel = maxLevel;
+        this.time = time;
     }
     public int getX() {
         return x;
@@ -55,5 +57,27 @@ public class Building
     {
         this.level = level;
     }
-    
+    public int getTime() {
+        return time;
+    }
+    public void setUpButton(JPanel panel, Building building, String imageURL)
+    {
+        JButton button = new JButton();
+        button.setBounds(building.getX(), building.getY(), 300, 75);
+        button.setText("<html>Clicker Building<br>Cost: " + building.getCost() + " Cat Food<br>Income: " + building.getIncome() + " Per "+ building.getTime()+ " second </html>");
+        button.setIcon(new ImageIcon(imageURL));
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (ClickerGame.score >= cost && level < maxLevel) {
+                    ClickerGame.score -= cost;
+                    building.setLevel(level + 1);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Not enough money to purchase the building. You need " + (building.getCost() -  Math.floor(ClickerGame.score * 100) / 100) + " more to purchase the building.");
+                }
+            }
+        });
+        panel.add(button);
+    }
 }
