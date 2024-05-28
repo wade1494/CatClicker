@@ -3,4 +3,4 @@ To-do list
 - rebirth function
 - score multiply button
 - upgrade button for building
-- add background music
+- add background picture
