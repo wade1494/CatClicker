@@ -18,49 +18,49 @@ import java.awt.event.ActionEvent;
 //Building Class
 class ClickerBuilding extends Building {
     public ClickerBuilding() {
-        super("Clicker", 400, 25, 10, 0.1, 0, 2000000, 1, "src\\ClickerBuilding.jpg");
+        super("Clicker", 400, 25, 10, 0.1, 50000, 0, 2000000, 1, "src\\ClickerBuilding.jpg");
     }
 }
 
 class CatLover extends Building {
     public CatLover() {
-        super("Cat Lover", 400, 125, 100, 10, 0, 2000000, 10, "src\\catLover.jpg");
+        super("Cat Lover", 400, 125, 100, 10,2000000, 0, 2000000, 10, "src\\catLover.jpg");
     }
 }
 
 class CatFactory extends Building {
     public CatFactory() {
-        super("Cat Factory", 400, 225, 1500, 200, 0, 10000000, 30, "src\\catFactory.jpg");
+        super("Cat Factory", 400, 225, 1500,200, 1000000, 0, 10000000, 30, "src\\catFactory.jpg");
     }
 }
 
 class CatTower extends Building {
     public CatTower() {
-        super("Cat Tower", 400, 325, 10000, 5000, 0, 15000000, 120, "src\\catTower.jpg");
+        super("Cat Tower", 400, 325, 10000, 5000,40000000, 0, 15000000, 120, "src\\catTower.jpg");
     }
 }
 
 class CatCity extends Building {
     public CatCity() {
-        super("Cat City", 750, 25, 200000, 75000, 0, 20000000, 60, "src\\catCity.jpg");
+        super("Cat City", 750, 25, 200000, 75000, 50000000L, 0, 20000000, 60, "src\\catCity.jpg");
     }
 }
 
 class CatKingdom extends Building {
     public CatKingdom() {
-        super("Cat Kingdom", 750, 125, 10000000, 2000000, 0, 30000000, 100, "src\\catKingdom.jpg");
+        super("Cat Kingdom", 750, 125, 10000000, 2000000,10000000000L, 0, 30000000, 100, "src\\catKingdom.jpg");
     }
 }
 
 class CatEmpire extends Building {
     public CatEmpire() {
-        super("Cat Empire", 750, 225, 2500000000L, 10000000, 0, 40000000, 120, "src\\catEmpire.jpg");
+        super("Cat Empire", 750, 225, 2500000000L, 10000000,100000000000L, 0, 40000000, 120, "src\\catEmpire.jpg");
     }
 }
 
 class CatUniverse extends Building {
     public CatUniverse() {
-        super("Cat Universe", 750, 325, 100000000000L, 1000000000, 0, 50000000, 70, "src\\catUniverse.jpg");
+        super("Cat Universe", 750, 325, 100000000000L, 1000000000, 6000000000000l, 0, 50000000, 70, "src\\catUniverse.jpg");
     }
 }
 public class ClickerGame extends JFrame {
@@ -75,6 +75,7 @@ public class ClickerGame extends JFrame {
     public static double prestigeMultiplier = 1.5;
     private static double prestigeBaseCost = 1000000;
     private static double prestigeCost = 1000000;
+    double normalClickerUpgrade = 1;
     JFrame mainWindow = new JFrame();
 
     //UpdateScoreLabel
@@ -168,6 +169,8 @@ public class ClickerGame extends JFrame {
         background.setBounds(0, 0, 1280, 800);
         background.setVisible(true);
         score = 0;
+        
+        
 
         //ClickButton
         clickButton = new JButton(new ImageIcon(("src\\download.jpg")));
@@ -177,7 +180,7 @@ public class ClickerGame extends JFrame {
         clickButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) 
         {
-            score+=100 * prestigeMultiplier;
+            score+=100 * prestigeMultiplier * normalClickerUpgrade;
             playPopCatSound();
             catAnimation(clickButton);
             }
@@ -307,22 +310,61 @@ public class ClickerGame extends JFrame {
 
         //UpgradeWindowButton (WIP)
         JButton upgradeButton = new JButton("Upgrade");
-        upgradeButton.setBounds(215, 60, 85, 20);
+        upgradeButton.setBounds(215, 60, 85, 20);   
         upgradeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
             JFrame upgradeWindow = new JFrame("Upgrade Window");
 
-            JButton upgradeClicker = new JButton();
-            JButton upgradeCatLover = new JButton();
+            JPanel upgradePanel = new JPanel();
+            upgradePanel.setLayout(null);
+            upgradePanel.setPreferredSize(new Dimension(400, panel.getComponentCount() * 50 + 100));
+            
+            Timer statsUpdateTimer = new Timer(10, new ActionListener() {
+                public void actionPerformed(ActionEvent e) 
+                {
+                    upgradePanel.removeAll();
+                    for (Building tower : buildings) 
+                    {
+                        JButton towerUpgradeButton = new JButton();
+                        if (tower.getName() == "Clicker Building")
+                        {
+                            towerUpgradeButton.setText("<html> Upgrade your Clicker Building and your mouse's efficiency by 1.5x");
+                        }
+                        else
+                        {
+                            towerUpgradeButton.setText("<html> Upgrade your "+tower.getName()+"s efficiency by 1.5x</html>");
+                        }
+                        towerUpgradeButton.addActionListener(new ActionListener() 
+                        {
+                            public void actionPerformed(ActionEvent e) 
+                            {
+                                if (tower.getName() == "Clicker Building")
+                                {
+                                    normalClickerUpgrade += 1.5;
+                                }
+                            }
+                        });
+                        towerUpgradeButton.setBounds(10, upgradePanel.getComponentCount() * 90, 400, 80);
+                        upgradePanel.add(towerUpgradeButton);
+                    }
+                }
+            });
+            statsUpdateTimer.setRepeats(true);
+            statsUpdateTimer.start();
 
-            upgradeWindow.setSize(400, 300);
+            JScrollPane upgradeScrollPane = new JScrollPane(upgradePanel);
+            upgradeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            upgradeScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+            upgradeWindow.add(upgradeScrollPane);
+            upgradeWindow.setSize(400, 400);
             upgradeWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             upgradeWindow.setLocationRelativeTo(null);
             upgradeWindow.setVisible(true);
             upgradeWindow.setResizable(false);
             }
         });
+        
 
         //BuyModeButton
         JButton x1Button = new JButton("1x");

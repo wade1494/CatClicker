@@ -18,7 +18,10 @@ public class Building
     private int time;
     private String name;
     private String imageURL;
-    public Building(String name, int x, int y, double cost, double income, int level, int maxLevel, int time, String imageURL)
+    private double upgrade = 1;
+    private double upgradeCost;
+    private double godUpgrade = 1;
+    public Building(String name, int x, int y, double cost, double income, double upgradeCost, int level, int maxLevel, int time, String imageURL)
     {
         this.imageURL = imageURL;
         this.name = name;
@@ -49,7 +52,7 @@ public class Building
     
     public double totalIncome()
     {
-        return income * level * ClickerGame.prestigeMultiplier;
+        return income * level * ClickerGame.prestigeMultiplier * godUpgrade * upgrade;
     }
     public int getLevel() {
         return level;
@@ -72,6 +75,24 @@ public class Building
     public String getImageURL()
     {
         return imageURL;
+    }
+    public void setUpgradeCost(double upgradeCost) {
+        this.upgradeCost = upgradeCost;
+    }
+    public double getUpgradeCost() {
+        return upgradeCost;
+    }
+    public void setUpgrade(double upgrade)
+    {
+        this.upgrade = upgrade;
+    }
+    public double getUpgrade()
+    {
+        return upgrade;
+    }
+    public void setGodUpgrade(double godUpgrade)
+    {
+        this.godUpgrade = godUpgrade;
     }
     public void setUpButton(JPanel panel, Building building)
     {
