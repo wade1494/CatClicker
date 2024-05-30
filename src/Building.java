@@ -2,25 +2,26 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.sound.sampled.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-public class Building
+public class Building implements Serializable
 {
     private int x;
     private int y;
     private double cost;
     private double income;
     private int level;
-    private int maxLevel;
+    private int maxLevel = Integer.MAX_VALUE - 1;
     private int time;
     private String name;
     private String imageURL;
     private double upgrade = 1;
     private double upgradeCost;
-    private double godUpgrade = 1;
+    private boolean inList = false;
     public Building(String name, int x, int y, double cost, double income, double upgradeCost, int level, int maxLevel, int time, String imageURL)
     {
         this.imageURL = imageURL;
@@ -30,9 +31,20 @@ public class Building
         this.cost = cost;
         this.income = income;
         this.level = level;
-        this.maxLevel = maxLevel;
         this.time = time;
-        ClickerGame.buildings.add(this);
+        this.upgradeCost = upgradeCost;
+
+        for (Building val : ClickerGame.buildings)
+        {
+            if (val.getName().equals(name))
+            {
+                inList = true;
+            }
+        }
+        if (!inList)
+        {
+            ClickerGame.buildings.add(this);
+        }
     }
     public int getX() {
         return x;
@@ -52,7 +64,7 @@ public class Building
     
     public double totalIncome()
     {
-        return income * level * ClickerGame.prestigeMultiplier * godUpgrade * upgrade;
+        return income * level * ClickerGame.getPresigeMultiplier() * ClickerGame.getGodUpgrade() * upgrade;
     }
     public int getLevel() {
         return level;
@@ -90,10 +102,6 @@ public class Building
     {
         return upgrade;
     }
-    public void setGodUpgrade(double godUpgrade)
-    {
-        this.godUpgrade = godUpgrade;
-    }
     public void setUpButton(JPanel panel, Building building)
     {
         JButton button = new JButton();
@@ -102,31 +110,37 @@ public class Building
         button.setIcon(new ImageIcon(building.getImageURL()));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (ClickerGame.getBuyMode() != -1)
+            if (ClickerGame.getBuyMode() != -1) {
+                if (ClickerGame.score >= building.getCost() * ClickerGame.getBuyMode() && building.getLevel() + ClickerGame.getBuyMode() < building.getMaxLevel()) {
+                    ClickerGame.score -= cost * ClickerGame.getBuyMode();
+                    building.setLevel(building.getLevel() + ClickerGame.getBuyMode());
+                } else 
                 {
-                    if (ClickerGame.score >= building.getCost() * ClickerGame.getBuyMode() && building.getLevel() + ClickerGame.getBuyMode() < building.getMaxLevel()) 
-                    {
-                        ClickerGame.score -= cost * ClickerGame.getBuyMode();
-                        building.setLevel(building.getLevel() + ClickerGame.getBuyMode());
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "Not enough money to purchase the building. You need " + (cost -  Math.floor(ClickerGame.score * 100) / 100) + " more to purchase the building.");
-                    }
+                    JOptionPane.showMessageDialog(null, "Not enough money to purchase the building. You need " + (cost - Math.floor(ClickerGame.score * 100) / 100) + " more to purchase the building.");
                 }
-                else
-                {
-                    if (ClickerGame.score >= building.getCost())
-                    {
-                        int maxBuy = (int) (ClickerGame.score / building.getCost());
+            } else {
+                if (ClickerGame.score >= building.getCost()) {
+                    int maxBuy = (int) (ClickerGame.score / building.getCost());
+                    if (building.getLevel() + maxBuy < building.getMaxLevel() && building.getLevel() + maxBuy > 0) {
                         ClickerGame.score -= building.getCost() * maxBuy;
                         building.setLevel(building.getLevel() + maxBuy);
-                    }
-                    else
+                    } 
+                    else if (building.getLevel() + maxBuy >= building.getMaxLevel() || building.getLevel() + maxBuy <= 0)
                     {
-                        JOptionPane.showMessageDialog(null, "Not enough money to purchase the building. You need " + (building.getCost() -  Math.floor(ClickerGame.score * 100) / 100) + " more to purchase the building.");
+                        int remainingLevels = building.getMaxLevel() - building.getLevel();
+                        double remainingCost = remainingLevels * building.getCost();
+                        ClickerGame.score -= remainingCost;
+                        building.setLevel(building.getLevel() + remainingLevels);
+                        button.setEnabled(false);
+                        System.out.println("checking");
                     }
+                } 
+                else 
+                {
+                    JOptionPane.showMessageDialog(null, "Not enough money to purchase the building. You need " + (building.getCost() - Math.floor(ClickerGame.score * 100) / 100) + " more to purchase the building.");
                 }
+            }
+
             }
         });
         Timer updateTimer = new Timer(100, new ActionListener() 
